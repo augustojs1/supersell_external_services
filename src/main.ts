@@ -1,10 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import {
-  FastifyAdapter,
-  NestFastifyApplication,
-} from '@nestjs/platform-fastify';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 import { AppModule } from './app.module';
 
@@ -12,9 +8,15 @@ async function bootstrap() {
   const PORT = process.env.PORT;
   const NODE_ENV = process.env.NODE_ENV;
 
-  const app = await NestFactory.create<NestFastifyApplication>(
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
-    new FastifyAdapter(),
+    {
+      transport: Transport.TCP,
+      options: {
+        port: Number(PORT),
+        host: '127.0.0.1',
+      },
+    },
   );
 
   app.useGlobalPipes(
@@ -29,22 +31,7 @@ async function bootstrap() {
 
   // app.useGlobalFilters(new AppExceptionFilter());
 
-  app.setGlobalPrefix('api/v1');
-
-  const documentBuilderConfig = new DocumentBuilder()
-    .setTitle('Supersell REST API')
-    .setDescription(
-      'An online martketplace mockup project based on Amazon/AliExpress/eBay and etc.',
-    )
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-
-  const document = SwaggerModule.createDocument(app, documentBuilderConfig);
-
-  SwaggerModule.setup('api', app, document);
-
-  await app.listen(PORT ?? 4000, '0.0.0.0');
+  await app.listen();
 
   console.log(`Server running in ${NODE_ENV} mode on port ${PORT}! 🚀`);
 }
