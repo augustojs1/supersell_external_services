@@ -1,4 +1,4 @@
-# 🏬 SuperSell Server
+# 🏬 SuperSell External Services Server
 
 Microservice server to handle Supersell Server external services such as payment and e-mail using Event Driven Architecture.
 
