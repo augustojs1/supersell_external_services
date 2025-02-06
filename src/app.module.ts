@@ -13,7 +13,5 @@ import { PaymentsModule } from './modules/payments/payments.module';
     }),
     PaymentsModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule {}
