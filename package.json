@@ -1,8 +1,8 @@
 {
   "name": "supersell_external_services",
-  "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "version": "1.0",
+  "description": "Microservice server to handle Supersell Server external services using Event Driven Architecture",
+  "author": "Augusto Souza",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
