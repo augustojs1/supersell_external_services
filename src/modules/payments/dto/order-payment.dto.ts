@@ -8,6 +8,10 @@ class CreditCardMethodData {
 }
 
 export class OrderPaymentDto {
+  order: {
+    id: string;
+    total_price: number;
+  };
   method: PaymentMethods;
   paymentDetails: CreditCardMethodData;
 }

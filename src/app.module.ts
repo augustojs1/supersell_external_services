@@ -3,6 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 
 import { configuration } from '@/infra/config/configuration';
 import { PaymentsModule } from './modules/payments/payments.module';
+import { OrdersModule } from './modules/orders/orders.module';
+import { DrizzleModule } from './infra/database/orm/drizzle/drizzle.module';
 
 @Module({
   imports: [
@@ -12,6 +14,8 @@ import { PaymentsModule } from './modules/payments/payments.module';
       load: [configuration],
     }),
     PaymentsModule,
+    OrdersModule,
+    DrizzleModule,
   ],
 })
 export class AppModule {}

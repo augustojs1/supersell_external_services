@@ -7,18 +7,9 @@ import {
   timestamp,
 } from 'drizzle-orm/mysql-core';
 
-import { users as userEntity } from './user.entity';
-import { address as addressEntity } from './address.entity';
-
-enum OrderStatus {
-  PENDING_PAYMENT = 'PENDING_PAYMENT',
-  FAILED_PAYMENT = 'FAILED_PAYMENT',
-  PAID = 'PAID',
-  SENT = 'SENT',
-  ON_DELIVERY = 'ON_DELIVERY',
-  DELIVERED = 'DELIVERED',
-  CANCELLED = 'CANCELLED',
-}
+import { users as userEntity } from '../../../infra/database/orm/drizzle/schemas/user.entity';
+import { address as addressEntity } from '../../../infra/database/orm/drizzle/schemas/address.entity';
+import { OrderStatus } from '../enums/order-status.enum';
 
 export const orders = mysqlTable('orders', {
   id: char({ length: 26 }).primaryKey().notNull(),
