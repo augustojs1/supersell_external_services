@@ -3,6 +3,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 import { AppModule } from './app.module';
+import { AppExceptionFilter } from './infra/filters/exceptions';
 
 async function bootstrap() {
   const PORT = Number(process.env.PORT);
@@ -30,7 +31,7 @@ async function bootstrap() {
     }),
   );
 
-  // app.useGlobalFilters(new AppExceptionFilter());
+  app.useGlobalFilters(new AppExceptionFilter());
 
   await app.listen();
 
