@@ -17,4 +17,10 @@ export const configuration = () => ({
     host: process.env.SUPERSELL_EXTERNAL_SERVICE_HOST,
     port: Number(process.env.SUPERSELL_EXTERNAL_SERVICE_PORT),
   },
+  ethereal_smtp: {
+    host: process.env.ETHEREAL_SMTP_HOST,
+    port: Number(process.env.ETHEREAL_SMTP_PORT),
+    user: process.env.ETHEREAL_SMTP_USER,
+    pass: process.env.ETHEREAL_SMTP_PASS,
+  },
 });

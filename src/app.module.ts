@@ -6,6 +6,7 @@ import { PaymentsModule } from './modules/payments/payments.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { DrizzleModule } from './infra/database/orm/drizzle/drizzle.module';
 import { MessagingModule } from './infra/messaging/messaging.module';
+import { EmailsModule } from './modules/emails/emails.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { MessagingModule } from './infra/messaging/messaging.module';
     OrdersModule,
     DrizzleModule,
     MessagingModule,
+    EmailsModule,
   ],
 })
 export class AppModule {}
