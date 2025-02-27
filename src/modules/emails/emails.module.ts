@@ -3,6 +3,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 
 import { EmailsService } from './emails.service';
 import { configuration } from '@/infra/config/configuration';
+import { EmailTemplateService } from './email-template.service';
 
 const env = configuration();
 
@@ -20,7 +21,7 @@ const env = configuration();
       },
     }),
   ],
-  providers: [EmailsService],
+  providers: [EmailsService, EmailTemplateService],
   exports: [EmailsService],
 })
 export class EmailsModule {}

@@ -2,25 +2,27 @@ import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 
 import { PasswordRecoveryEmailDto } from '@/infra/messaging/consumers/dto';
+import { EmailTemplateService } from './email-template.service';
 
 @Injectable()
 export class EmailsService {
-  constructor(private readonly mailerService: MailerService) {}
+  constructor(
+    private readonly mailerService: MailerService,
+    private readonly emailTemplateService: EmailTemplateService,
+  ) {}
 
   public async sendPasswordResetLink(data: PasswordRecoveryEmailDto) {
-    await this.mailerService.sendMail({
-      to: data.email,
-      subject: 'Supersell - Your password reset link.',
-      from: 'admin.supersell@email.com',
-      html: `
-        <h3>Hello, ${data.first_name}!</h3>
-        <p>Click the following URL to create a new password!</p>
-        <br>
-        <a href="http://localhost:8000/forgot-password?token=${data.reset_token}"> Redirect </a>
-        <br>
-        <br>
-        <span>Att. Supersell Team inc.</span>
-      `,
-    });
+    try {
+      const template = await this.emailTemplateService.getTemplate(data);
+
+      await this.mailerService.sendMail({
+        from: 'admin.supersell@email.com',
+        to: data.email,
+        subject: 'Supersell - Your password reset link.',
+        html: template,
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
