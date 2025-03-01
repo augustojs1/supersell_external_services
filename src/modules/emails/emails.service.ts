@@ -38,6 +38,12 @@ export class EmailsService {
     try {
       const statusData = this.orderStatusEmailTemplate[data.status];
 
+      if (!statusData) {
+        throw new Error(
+          `Order status email template does not exists for status ${data.status}`,
+        );
+      }
+
       const template =
         await this.emailTemplateService.getOrderStausChangeTemplate({
           payload: data,
@@ -52,11 +58,11 @@ export class EmailsService {
       });
 
       console.log(
-        `Order change status email successfully sent for Order #${data.order_id} to customer ${data.customer_email}.`,
+        `Order change to status ${data.status} email successfully sent for Order #${data.order_id} to customer ${data.customer_email}.`,
       );
     } catch (error) {
       console.log(
-        `Failed sending order change email for Order #${data.order_id} to customer ${data.customer_email}::`,
+        `Failed sending order change status to ${data.status} email for Order #${data.order_id} to customer ${data.customer_email}::`,
         error,
       );
     }

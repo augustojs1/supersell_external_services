@@ -70,9 +70,9 @@
               >
                 Hello, <%= customer_name %>! <br />
                 <br />
-                We noticed that your order #<%= order_id %> is awaiting payment.
-                To proceed with your purchase, please complete the payment as
-                soon as possible.
+                Unfortunately, the payment for your order #<%= order_id %> was
+                unsuccessful. This could be due to an issue with your payment
+                method or insufficient funds.
               </td>
             </tr>
 
@@ -101,7 +101,7 @@
                           text-decoration: none;
                           font-weight: bold;
                         "
-                        >Complete Payment Now</a
+                        >Try Again</a
                       >
                     </td>
                   </tr>
@@ -118,8 +118,8 @@
                   line-height: 1.6;
                 "
               >
-                If you have already made the payment, please ignore this
-                message. Let us know if you need any assistance!
+                If you need help resolving this issue, feel free to contact our
+                support team.
                 <br />
                 <br />
                 Best regards,
