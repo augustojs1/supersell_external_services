@@ -23,4 +23,7 @@ export const configuration = () => ({
     user: process.env.ETHEREAL_SMTP_USER,
     pass: process.env.ETHEREAL_SMTP_PASS,
   },
+  email: {
+    admin: process.env.ADMIN_EMAIL,
+  },
 });

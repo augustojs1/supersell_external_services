@@ -18,4 +18,23 @@ export class EmailTemplateService {
       );
     });
   }
+
+  public async getOrderStausChangeTemplate(data: {
+    templatePath: string;
+    payload: any;
+  }): Promise<string> {
+    return new Promise((resolve, reject) => {
+      ejs.renderFile(
+        data.templatePath,
+        data.payload,
+        async function (error, template) {
+          if (!error) {
+            resolve(template as string);
+          }
+
+          reject(error);
+        },
+      );
+    });
+  }
 }
