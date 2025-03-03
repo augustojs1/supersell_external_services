@@ -37,4 +37,20 @@ export class EmailTemplateService {
       );
     });
   }
+
+  public async getOrderReceiptTemplate(data: any): Promise<string> {
+    return new Promise((resolve, reject) => {
+      ejs.renderFile(
+        'src/templates/order_receipt.ejs',
+        data,
+        async function (error, template) {
+          if (!error) {
+            resolve(template as string);
+          }
+
+          reject(error);
+        },
+      );
+    });
+  }
 }
