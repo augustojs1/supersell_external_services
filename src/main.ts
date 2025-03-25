@@ -10,16 +10,23 @@ async function bootstrap() {
   const HOST = process.env.SUPERSELL_EXTERNAL_SERVICE_HOST;
   const NODE_ENV = process.env.NODE_ENV;
 
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule,
-    {
-      transport: Transport.TCP,
+  const app = await NestFactory.create(AppModule);
+
+  const queues = ['email', 'payment'];
+
+  for (const queue of queues) {
+    await app.connectMicroservice({
+      transport: Transport.RMQ,
       options: {
-        port: PORT,
-        host: HOST,
+        urls: ['amqp://localhost:5672'],
+        queue: queue,
+        noAck: false,
+        queueOptions: {
+          durable: true,
+        },
       },
-    },
-  );
+    });
+  }
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -33,7 +40,8 @@ async function bootstrap() {
 
   app.useGlobalFilters(new AppExceptionFilter());
 
-  await app.listen();
+  await app.startAllMicroservices();
+  await app.listen(PORT);
 
   console.log(`Server running in ${NODE_ENV} mode on port ${PORT}! 🚀`);
 }
