@@ -26,4 +26,10 @@ export const configuration = () => ({
   email: {
     admin: process.env.ADMIN_EMAIL,
   },
+  aws: {
+    queues: {
+      email: process.env.AWS_SQS_QUEUE_EMAIL_EVENTS_URL,
+      payment: process.env.AWS_SQS_QUEUE_PAYMENT_EVENTS_URL,
+    },
+  },
 });

@@ -4,14 +4,13 @@ import { eq } from 'drizzle-orm';
 import { ulid } from 'ulid';
 
 import * as schemas from '@/infra/database/orm/drizzle/schema';
-import { DATABASE_TAG } from '@/infra/database/orm/drizzle/drizzle.module';
 import { OrderStatus } from './enums';
 import { OrderPaymentEntity, PaymentData, ProductOrdersResult } from './types';
 
 @Injectable()
 export class OrdersRepository {
   constructor(
-    @Inject(DATABASE_TAG)
+    @Inject('DB_DEV')
     private readonly drizzle: MySql2Database,
   ) {}
 

@@ -8,6 +8,7 @@ import { DrizzleModule } from './infra/database/orm/drizzle/drizzle.module';
 import { EventsModule } from './infra/events/events.module';
 import { EmailsModule } from './modules/emails/emails.module';
 import { MailingClientModule } from './infra/mailing-client/mailing-client.module';
+import { HealthCheckModule } from './infra/health-check/health-check.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { MailingClientModule } from './infra/mailing-client/mailing-client.modul
     EventsModule,
     MailingClientModule,
     EmailsModule,
+    HealthCheckModule,
   ],
 })
 export class AppModule {}
