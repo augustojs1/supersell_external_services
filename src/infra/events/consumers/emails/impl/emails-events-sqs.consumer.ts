@@ -27,7 +27,7 @@ export class EmailsEventsSqsConsumer implements IEmailsEventsConsumer {
     });
 
     this.logger.info(
-      {},
+      { success: true },
       'Starting AWS SQS EmailsEventsSqsConsumer consumer class',
     );
     this.consumer.start();

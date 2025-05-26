@@ -3,12 +3,14 @@ import {
   Catch,
   ExceptionFilter,
   HttpException,
-  Logger,
 } from '@nestjs/common';
+import { JsonLogger, LoggerFactory } from 'json-logger-service';
 
 @Catch()
 export class AppExceptionFilter implements ExceptionFilter {
-  private readonly logger = new Logger(AppExceptionFilter.name);
+  private readonly logger: JsonLogger = LoggerFactory.createLogger(
+    AppExceptionFilter.name,
+  );
 
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
