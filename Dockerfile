@@ -5,7 +5,7 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 RUN npm install --legacy-peer-deps
-ENV NODE_ENV=development
+ENV NODE_ENV=production
 
 COPY . .
 RUN npm run build
@@ -20,6 +20,6 @@ COPY --from=build /app/dist ./dist
 COPY --from=build /app/src/infra/config/env/production.env ./src/infra/config/env/production.env
 COPY --from=build /app/package.json ./
 
-EXPOSE 8080
+EXPOSE 8090
 
 CMD ["npm", "run", "start:prod"]
