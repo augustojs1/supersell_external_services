@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 import { configuration } from '@/infra/config/configuration';
-import { PaymentsModule } from './modules/payments/payments.module';
+import { OrderPaymentsModule } from './modules/order-payments/order-payments.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { DrizzleModule } from './infra/database/orm/drizzle/drizzle.module';
 import { EventsModule } from './infra/events/events.module';
@@ -16,7 +16,7 @@ import { MailingClientModule } from './infra/mailing-client/mailing-client.modul
       isGlobal: true,
       load: [configuration],
     }),
-    PaymentsModule,
+    OrderPaymentsModule,
     OrdersModule,
     DrizzleModule,
     EventsModule,

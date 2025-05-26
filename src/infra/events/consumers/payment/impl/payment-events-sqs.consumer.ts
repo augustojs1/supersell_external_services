@@ -1,6 +1,6 @@
 import { JsonLogger, LoggerFactory } from 'json-logger-service';
 
-import { PaymentsService } from '@/modules/payments/payments.service';
+import { OrderPaymentsService } from '@/modules/order-payments/order-payments.service';
 import { MessagingTopics } from '@/infra/events/enum';
 import { IPaymentEventsConsumer } from '@/infra/events/consumers/payment/ipayment-events-consumer.interface';
 
@@ -9,7 +9,7 @@ export class PaymentEventsSqsConsumer implements IPaymentEventsConsumer {
     PaymentEventsSqsConsumer.name,
   );
 
-  constructor(private readonly paymentsService: PaymentsService) {}
+  constructor(private readonly orderPaymentsService: OrderPaymentsService) {}
 
   handleOrdersPayment(data: any): Promise<void> {
     this.logger.info({

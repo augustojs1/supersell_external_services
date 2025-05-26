@@ -1,7 +1,7 @@
 import { ulid } from 'ulid';
 import { LoggerFactory, JsonLogger } from 'json-logger-service';
 
-import { OrderPaymentDto } from '@/modules/payments/dto/order-payment.dto';
+import { OrderPaymentDto } from '@/modules/order-payments/dto/order-payment.dto';
 import { IPaymentGateway } from '@/infra/payment-gateway/ipayment-gateway.interface';
 import { PaymentGatewayResponse } from '@/infra/payment-gateway/models/payment-gateway-succes.type';
 

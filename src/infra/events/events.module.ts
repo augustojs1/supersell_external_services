@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { configuration } from '@/infra/config/configuration';
 import { IEmailsEventsConsumer } from '@/infra/events/consumers/emails/iemails-consumer.interface';
-import { PaymentsModule } from '@/modules/payments/payments.module';
+import { OrderPaymentsModule } from '@/modules/order-payments/order-payments.module';
 import { EmailsModule } from '@/modules/emails/emails.module';
 import {
   EmailsEventsRabbitMqConsumer,
@@ -14,7 +14,7 @@ import { PaymentEventsSqsConsumer } from '@/infra/events/consumers/payment/impl/
 
 @Module({
   controllers: [PaymentEventsRabbitMqConsumer, EmailsEventsRabbitMqConsumer],
-  imports: [PaymentsModule, EmailsModule],
+  imports: [OrderPaymentsModule, EmailsModule],
   providers: [
     {
       provide: IEmailsEventsConsumer,

@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { EventPattern } from '@nestjs/microservices';
 import { LoggerFactory, JsonLogger } from 'json-logger-service';
 
-import { PaymentsService } from '@/modules/payments/payments.service';
+import { OrderPaymentsService } from '@/modules/order-payments/order-payments.service';
 import { MessagingTopics } from '@/infra/events/enum';
 import { IPaymentEventsConsumer } from '@/infra/events/consumers/payment/ipayment-events-consumer.interface';
 
@@ -12,7 +12,7 @@ export class PaymentEventsRabbitMqConsumer implements IPaymentEventsConsumer {
     PaymentEventsRabbitMqConsumer.name,
   );
 
-  constructor(private readonly paymentsService: PaymentsService) {}
+  constructor(private readonly orderPaymentsService: OrderPaymentsService) {}
 
   @EventPattern(MessagingTopics.ORDER_PAYMENT)
   public async handleOrdersPayment(data: any) {
@@ -21,6 +21,6 @@ export class PaymentEventsRabbitMqConsumer implements IPaymentEventsConsumer {
       body: data,
     });
 
-    await this.paymentsService.create(data);
+    await this.orderPaymentsService.create(data);
   }
 }

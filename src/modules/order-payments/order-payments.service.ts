@@ -8,9 +8,9 @@ import { OrderPaymentStatus } from '../orders/enums/order-payment-status.enum';
 import { IPaymentGateway } from '@/infra/payment-gateway/ipayment-gateway.interface';
 
 @Injectable()
-export class PaymentsService {
+export class OrderPaymentsService {
   private readonly logger: JsonLogger = LoggerFactory.createLogger(
-    PaymentsService.name,
+    OrderPaymentsService.name,
   );
 
   constructor(
