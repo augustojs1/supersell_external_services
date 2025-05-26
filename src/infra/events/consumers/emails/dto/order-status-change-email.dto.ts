@@ -1,6 +1,6 @@
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
-import { OrderStatus } from '../../enum';
+import { OrderStatus } from '@/infra/events/enum';
 
 export class OrderStatusChangeDto {
   @IsNotEmpty()

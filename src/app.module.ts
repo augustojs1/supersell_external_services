@@ -5,7 +5,7 @@ import { configuration } from '@/infra/config/configuration';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { DrizzleModule } from './infra/database/orm/drizzle/drizzle.module';
-import { MessagingModule } from './infra/messaging/messaging.module';
+import { EventsModule } from './infra/events/events.module';
 import { EmailsModule } from './modules/emails/emails.module';
 
 @Module({
@@ -18,7 +18,7 @@ import { EmailsModule } from './modules/emails/emails.module';
     PaymentsModule,
     OrdersModule,
     DrizzleModule,
-    MessagingModule,
+    EventsModule,
     EmailsModule,
   ],
 })

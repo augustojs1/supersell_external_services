@@ -12,7 +12,8 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
 
-  const queues = ['email', 'payment'];
+  if (NODE_ENV === 'development') {
+    const queues = ['email', 'payment'];
 
   for (const queue of queues) {
     await app.connectMicroservice({
@@ -26,6 +27,8 @@ async function bootstrap() {
         },
       },
     });
+  }
+    
   }
 
   app.useGlobalPipes(

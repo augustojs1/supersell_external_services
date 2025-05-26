@@ -6,9 +6,9 @@ import {
   EmailOrderConfirmedDto,
   OrderStatusChangeDto,
   PasswordRecoveryEmailDto,
-} from '@/infra/messaging/consumers/dto';
+} from '@/infra/events/consumers/emails/dto';
 import { EmailTemplateService } from './email-template.service';
-import { EmailStatusTemplateConstant } from '@/infra/messaging/constants';
+import { EmailStatusTemplateConstant } from '@/infra/events/consumers/emails/constants';
 
 @Injectable()
 export class EmailsService {
