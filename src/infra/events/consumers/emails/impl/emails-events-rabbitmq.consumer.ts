@@ -24,6 +24,9 @@ export class EmailsEventsRabbitMqConsumer implements IEmailsEventsConsumer {
     @Payload() dto: PasswordRecoveryEmailDto,
   ): Promise<void> {
     this.logger.info(
+      {
+        body: dto,
+      },
       `Subscribe to message on topic ${MessagingTopics.EMAIL_PASSWORD_RESET}`,
     );
 
@@ -35,6 +38,9 @@ export class EmailsEventsRabbitMqConsumer implements IEmailsEventsConsumer {
     @Payload() dto: OrderStatusChangeDto,
   ): Promise<void> {
     this.logger.info(
+      {
+        body: dto,
+      },
       `Subscribe to message on topic ${MessagingTopics.EMAIL_ORDER_STATUS_CHANGE}`,
     );
 
@@ -46,6 +52,9 @@ export class EmailsEventsRabbitMqConsumer implements IEmailsEventsConsumer {
     @Payload() dto: EmailOrderConfirmedDto,
   ): Promise<void> {
     this.logger.info(
+      {
+        body: dto,
+      },
       `Subscribe to message on topic ${MessagingTopics.EMAIL_ORDER_CREATED}`,
     );
 

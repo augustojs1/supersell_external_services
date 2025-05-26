@@ -1,44 +1,53 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { MailerService } from '@nestjs-modules/mailer';
+import { LoggerFactory, JsonLogger } from 'json-logger-service';
 
 import {
   EmailOrderConfirmedDto,
   OrderStatusChangeDto,
   PasswordRecoveryEmailDto,
 } from '@/infra/events/consumers/emails/dto';
-import { EmailTemplateService } from './email-template.service';
 import { EmailStatusTemplateConstant } from '@/infra/events/consumers/emails/constants';
+import { ITemplateEngineService } from '@/infra/template-engine/itemplate-engine-service.interface';
+import { IMailingClientService } from '@/infra/mailing-client/imailing-client-service.interface';
 
 @Injectable()
 export class EmailsService {
-  private readonly logger = new Logger(EmailsService.name);
-  public orderStatusEmailTemplate = EmailStatusTemplateConstant;
+  private readonly logger: JsonLogger = LoggerFactory.createLogger(
+    EmailsService.name,
+  );
+  private readonly orderStatusEmailTemplate = EmailStatusTemplateConstant;
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly mailerService: MailerService,
-    private readonly emailTemplateService: EmailTemplateService,
+    private readonly mailingClientService: IMailingClientService,
+    private readonly templateEngineService: ITemplateEngineService,
   ) {}
 
   public async sendPasswordResetLink(data: PasswordRecoveryEmailDto) {
     try {
-      const template = await this.emailTemplateService.getTemplate(data);
+      const template = await this.templateEngineService.getTemplate(data);
 
-      await this.mailerService.sendMail({
+      await this.mailingClientService.send({
         from: this.configService.get<string>('email.admin'),
         to: data.email,
         subject: 'Supersell - Your password reset link.',
         html: template,
       });
 
-      this.logger.log(
+      this.logger.info(
+        {
+          body: data,
+        },
         `Password reset link email SUCCESS sent for email ${data.email}.`,
       );
     } catch (error) {
       this.logger.error(
+        {
+          error,
+          body: data,
+        },
         `Password reset link email FAILED for email ${data.email}.`,
-        error,
       );
     }
   }
@@ -54,25 +63,31 @@ export class EmailsService {
       }
 
       const template =
-        await this.emailTemplateService.getOrderStausChangeTemplate({
+        await this.templateEngineService.getOrderStausChangeTemplate({
           payload: data,
           templatePath: statusData.templatePath,
         });
 
-      await this.mailerService.sendMail({
+      await this.mailingClientService.send({
         from: this.configService.get<string>('email.admin'),
         to: data.customer_email,
         subject: statusData.getSubject(data.order_id),
         html: template,
       });
 
-      this.logger.log(
+      this.logger.info(
+        {
+          body: data,
+        },
         `Order change to status ${data.status} email successfully sent for Order #${data.order_id} to customer ${data.customer_email}.`,
       );
     } catch (error) {
       this.logger.error(
+        {
+          error,
+          body: data,
+        },
         `Failed sending order change status to ${data.status} email for Order #${data.order_id} to customer ${data.customer_email}::`,
-        error,
       );
     }
   }
@@ -80,22 +95,28 @@ export class EmailsService {
   public async sendOrderReceiptEmail(dto: EmailOrderConfirmedDto) {
     try {
       const template =
-        await this.emailTemplateService.getOrderReceiptTemplate(dto);
+        await this.templateEngineService.getOrderReceiptTemplate(dto);
 
-      await this.mailerService.sendMail({
+      await this.mailingClientService.send({
         from: this.configService.get<string>('email.admin'),
         to: dto.user.email,
         subject: `Your Order #${dto.order_id} – Receipt & Details`,
         html: template,
       });
 
-      this.logger.log(
+      this.logger.info(
+        {
+          body: dto,
+        },
         `Order receipt email SUCCESS sent for Order #${dto.order_id} to customer ${dto.user.email}.`,
       );
     } catch (error) {
       this.logger.error(
+        {
+          error: error,
+          body: dto,
+        },
         `Order receipt email FAILED sent for Order #${dto.order_id} to customer ${dto.user.email}.`,
-        error,
       );
     }
   }
