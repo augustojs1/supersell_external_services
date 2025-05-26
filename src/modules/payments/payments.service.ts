@@ -1,25 +1,28 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { LoggerFactory, JsonLogger } from 'json-logger-service';
 
 import { OrderPaymentDto } from './dto/order-payment.dto';
-import { MockPaymentGatewayService } from '@/infra/payment-gateway/impl';
 import { OrdersService } from '../orders/orders.service';
 import { OrderStatus } from '../orders/enums';
 import { OrderPaymentStatus } from '../orders/enums/order-payment-status.enum';
+import { IPaymentGateway } from '@/infra/payment-gateway/ipayment-gateway.interface';
 
 @Injectable()
 export class PaymentsService {
-  private readonly logger = new Logger(PaymentsService.name);
+  private readonly logger: JsonLogger = LoggerFactory.createLogger(
+    PaymentsService.name,
+  );
 
   constructor(
     private readonly ordersService: OrdersService,
-    private readonly mockPaymentGateway: MockPaymentGatewayService,
+    private readonly paymentGatewayService: IPaymentGateway,
   ) {}
 
   public async create(data): Promise<void> {
     const payload: OrderPaymentDto = data;
 
     try {
-      const paymentResult = await this.mockPaymentGateway.send(payload);
+      const paymentResult = await this.paymentGatewayService.process(payload);
 
       await this.ordersService.updateOrderStatus(
         paymentResult.success ? OrderStatus.PAID : OrderStatus.FAILED_PAYMENT,
@@ -34,11 +37,19 @@ export class PaymentsService {
         },
       );
 
-      this.logger.log(`SUCCESS payment for order #${payload.order.id}.`);
+      this.logger.info(
+        {
+          body: payload,
+        },
+        `SUCCESS payment for order #${payload.order.id}.`,
+      );
     } catch (error) {
       this.logger.error(
+        {
+          body: payload,
+          error: error,
+        },
         `FAILED payment for order #${payload.order.id}.`,
-        error,
       );
     }
   }

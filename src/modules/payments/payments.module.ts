@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 
 import { PaymentsService } from './payments.service';
-import { MockPaymentGatewayService } from '@/infra/payment-gateway/impl';
 import { OrdersModule } from '../orders/orders.module';
+import { PaymentGatewayModule } from '@/infra/payment-gateway/payment-gateway.module';
 
 @Module({
-  providers: [PaymentsService, MockPaymentGatewayService],
-  imports: [OrdersModule],
+  providers: [PaymentsService],
+  imports: [OrdersModule, PaymentGatewayModule],
   exports: [PaymentsService],
 })
 export class PaymentsModule {}
