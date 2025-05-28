@@ -1,9 +1,11 @@
+import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { LoggerFactory, JsonLogger } from 'json-logger-service';
 
 import { MailingPayloadModel } from '@/infra/mailing-client/models';
 import { IMailingClientService } from '@/infra/mailing-client/imailing-client-service.interface';
 
+@Injectable()
 export class EtherealMailingClientService implements IMailingClientService {
   private readonly logger: JsonLogger = LoggerFactory.createLogger(
     EtherealMailingClientService.name,

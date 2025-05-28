@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { Message } from '@aws-sdk/client-sqs';
 import { SNSMessage } from 'aws-lambda';
 import { Consumer } from 'sqs-consumer';
@@ -7,6 +8,7 @@ import { OrderPaymentsService } from '@/modules/order-payments/order-payments.se
 import { MessagingTopics } from '@/infra/events/enum';
 import { IPaymentEventsConsumer } from '@/infra/events/consumers/payment/ipayment-events-consumer.interface';
 
+@Injectable()
 export class PaymentEventsSqsConsumer implements IPaymentEventsConsumer {
   private readonly logger: JsonLogger = LoggerFactory.createLogger(
     PaymentEventsSqsConsumer.name,
@@ -20,13 +22,13 @@ export class PaymentEventsSqsConsumer implements IPaymentEventsConsumer {
       pollingWaitTimeMs: 0,
       handleMessage: async (message) => this.handleMessage(message),
     });
-
     this.logger.info(
       {
         success: true,
       },
       'Starting AWS SQS PaymentEventsSqsConsumer consumer class',
     );
+
     this.consumer.start();
   }
 

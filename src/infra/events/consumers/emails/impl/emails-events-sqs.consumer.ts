@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { Message } from '@aws-sdk/client-sqs';
 import { SNSMessage } from 'aws-lambda';
 import { Consumer } from 'sqs-consumer';
@@ -12,6 +13,7 @@ import {
 } from '@/infra/events/consumers/emails/dto';
 import { EmailsService } from '@/modules/emails/emails.service';
 
+@Injectable()
 export class EmailsEventsSqsConsumer implements IEmailsEventsConsumer {
   private readonly logger: JsonLogger = LoggerFactory.createLogger(
     EmailsEventsSqsConsumer.name,
@@ -25,12 +27,10 @@ export class EmailsEventsSqsConsumer implements IEmailsEventsConsumer {
       pollingWaitTimeMs: 0,
       handleMessage: async (message) => this.handleMessage(message),
     });
-
     this.logger.info(
       { success: true },
       'Starting AWS SQS EmailsEventsSqsConsumer consumer class',
     );
-
     this.consumer.start();
   }
 

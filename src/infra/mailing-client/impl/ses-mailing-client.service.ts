@@ -1,15 +1,17 @@
-import { LoggerFactory, JsonLogger } from 'json-logger-service';
+import { Injectable } from '@nestjs/common';
 import {
   SESClient,
   SendEmailCommand,
   SendEmailCommandInput,
 } from '@aws-sdk/client-ses';
+import { LoggerFactory, JsonLogger } from 'json-logger-service';
 
 import { configuration } from '@/infra/config/configuration';
 import { MailingPayloadModel } from '@/infra/mailing-client/models';
 import { IMailingClientService } from '@/infra/mailing-client/imailing-client-service.interface';
 import { ITemplateEngineService } from '@/infra/template-engine/itemplate-engine-service.interface';
 
+@Injectable()
 export class SesMailingClientService implements IMailingClientService {
   private readonly logger: JsonLogger = LoggerFactory.createLogger(
     SesMailingClientService.name,
