@@ -9,7 +9,6 @@ import { LoggerFactory, JsonLogger } from 'json-logger-service';
 import { configuration } from '@/infra/config/configuration';
 import { MailingPayloadModel } from '@/infra/mailing-client/models';
 import { IMailingClientService } from '@/infra/mailing-client/imailing-client-service.interface';
-import { ITemplateEngineService } from '@/infra/template-engine/itemplate-engine-service.interface';
 
 @Injectable()
 export class SesMailingClientService implements IMailingClientService {
@@ -19,7 +18,7 @@ export class SesMailingClientService implements IMailingClientService {
   private readonly sesClient: SESClient;
   private readonly env = configuration();
 
-  constructor(private readonly templateEngineService: ITemplateEngineService) {
+  constructor() {
     this.sesClient = new SESClient({
       credentials: {
         accessKeyId: this.env.aws.access_key,
