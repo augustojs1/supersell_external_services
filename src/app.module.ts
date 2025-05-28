@@ -13,7 +13,7 @@ import { HealthCheckModule } from './infra/health-check/health-check.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: `${process.cwd()}/src/infra/config/env/development.env`,
+      envFilePath: `${process.cwd()}/src/infra/config/env/production.env`,
       isGlobal: true,
       load: [configuration],
     }),

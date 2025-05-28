@@ -30,19 +30,47 @@ export class EmailsEventsSqsConsumer implements IEmailsEventsConsumer {
       { success: true },
       'Starting AWS SQS EmailsEventsSqsConsumer consumer class',
     );
+
     this.consumer.start();
   }
 
-  async handleMessage(message: Message): Promise<void> {
+  public async handleMessage(message: Message): Promise<void> {
     const body = JSON.parse(message.Body) as SNSMessage;
+
+    const eventMessage = JSON.parse(body.Message);
+
+    console.log('eventMessage.:', eventMessage);
+    console.log('topic_name.:', eventMessage['topic_name']);
+
+    switch (eventMessage['topic_name']) {
+      case 'email_password_reset':
+        this.handleEmailPasswordReset(eventMessage);
+      case 'email_order_created':
+        this.handleEmailOrderConfirmed(eventMessage);
+    }
 
     this.logger.info(
       {
         body: body,
         MessageAttributes: body.MessageAttributes,
+        EventMessage: eventMessage,
+        TopicName: eventMessage['topic_name'],
       },
       `Received message from SQS queue in class EmailsEventsSqsConsumer`,
     );
+  }
+
+  public async handleEmailPasswordReset(
+    dto: PasswordRecoveryEmailDto,
+  ): Promise<void> {
+    this.logger.info(
+      {
+        body: dto,
+      },
+      `Received message on topic ${MessagingTopics.EMAIL_PASSWORD_RESET}. Handled by ::handleEmailPasswordReset()`,
+    );
+
+    await this.emailsService.sendPasswordResetLink(dto);
   }
 
   handleEmailOrderConfirmed(dto: EmailOrderConfirmedDto): Promise<void> {
@@ -50,7 +78,7 @@ export class EmailsEventsSqsConsumer implements IEmailsEventsConsumer {
       {
         body: dto,
       },
-      `Subscribe to message on topic ${MessagingTopics.EMAIL_PASSWORD_RESET}`,
+      `Subscribe to message on topic ${MessagingTopics.EMAIL_ORDER_CREATED}`,
     );
 
     return;
@@ -62,17 +90,6 @@ export class EmailsEventsSqsConsumer implements IEmailsEventsConsumer {
         body: dto,
       },
       `Subscribe to message on topic ${MessagingTopics.EMAIL_ORDER_STATUS_CHANGE}`,
-    );
-
-    return;
-  }
-
-  handleEmailPasswordReset(dto: PasswordRecoveryEmailDto): Promise<void> {
-    this.logger.info(
-      {
-        body: dto,
-      },
-      `Subscribe to message on topic ${MessagingTopics.EMAIL_ORDER_CREATED}`,
     );
 
     return;

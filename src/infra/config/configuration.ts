@@ -27,6 +27,9 @@ export const configuration = () => ({
     admin: process.env.ADMIN_EMAIL,
   },
   aws: {
+    access_key: process.env.AWS_ACCESS_KEY,
+    secret_access_key: process.env.AWS_SECRET_ACCESS_KEY,
+    region: process.env.AWS_REGION,
     queues: {
       email: process.env.AWS_SQS_QUEUE_EMAIL_EVENTS_URL,
       payment: process.env.AWS_SQS_QUEUE_PAYMENT_EVENTS_URL,
