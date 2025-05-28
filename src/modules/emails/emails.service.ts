@@ -10,6 +10,9 @@ import {
 import { EmailStatusTemplateConstant } from '@/infra/events/consumers/emails/constants';
 import { ITemplateEngineService } from '@/infra/template-engine/itemplate-engine-service.interface';
 import { IMailingClientService } from '@/infra/mailing-client/imailing-client-service.interface';
+import { EmailTemplatesRepository } from './email-templates.repository';
+import { EmailTemplateEntity } from './models';
+import { EmailTemplateTypes } from './enums';
 
 @Injectable()
 export class EmailsService {
@@ -22,11 +25,45 @@ export class EmailsService {
     private readonly configService: ConfigService,
     private readonly mailingClientService: IMailingClientService,
     private readonly templateEngineService: ITemplateEngineService,
+    private readonly emailTemplatesRepository: EmailTemplatesRepository,
   ) {}
+
+  private async findEmailTemplateByType(
+    type: EmailTemplateTypes,
+  ): Promise<EmailTemplateEntity> {
+    const emailTemplate = await this.emailTemplatesRepository.findByType(type);
+
+    if (!emailTemplate) {
+      throw new Error(`Email template for type ${type} does not exists!`);
+    }
+
+    return emailTemplate;
+  }
 
   public async sendPasswordResetLink(data: PasswordRecoveryEmailDto) {
     try {
-      const template = await this.templateEngineService.getTemplate(data);
+      const emailTemplate = await this.findEmailTemplateByType(
+        EmailTemplateTypes.PASSWORD_RECOVERY,
+      );
+
+      this.logger.info(
+        {
+          html: emailTemplate,
+        },
+        `Email template found for type ${EmailTemplateTypes.PASSWORD_RECOVERY}`,
+      );
+
+      const template = await this.templateEngineService.getTemplate(
+        emailTemplate.html,
+        data,
+      );
+
+      this.logger.info(
+        {
+          html: template,
+        },
+        `Email template generated for type ${EmailTemplateTypes.PASSWORD_RECOVERY}`,
+      );
 
       await this.mailingClientService.send({
         from: this.configService.get<string>('email.admin'),

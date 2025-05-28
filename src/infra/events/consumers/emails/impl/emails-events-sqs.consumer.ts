@@ -21,16 +21,26 @@ export class EmailsEventsSqsConsumer implements IEmailsEventsConsumer {
   private readonly consumer: Consumer;
 
   constructor(private readonly emailsService: EmailsService) {
+    this.logger.info({ info: this.emailsService }, 'EmailsService is:');
+    this.logger.info(
+      {
+        info: this.emailsService.sendPasswordResetLink,
+      },
+      'EmailsService.sendPasswordResetLink is:',
+    );
+
     this.consumer = Consumer.create({
       queueUrl: process.env.AWS_SQS_QUEUE_EMAIL_EVENTS_URL,
       waitTimeSeconds: 5,
       pollingWaitTimeMs: 0,
       handleMessage: async (message) => this.handleMessage(message),
     });
+
     this.logger.info(
       { success: true },
       'Starting AWS SQS EmailsEventsSqsConsumer consumer class',
     );
+
     this.consumer.start();
   }
 
@@ -39,14 +49,19 @@ export class EmailsEventsSqsConsumer implements IEmailsEventsConsumer {
 
     const eventMessage = JSON.parse(body.Message);
 
-    console.log('eventMessage.:', eventMessage);
-    console.log('topic_name.:', eventMessage['topic_name']);
+    this.logger.info(
+      {
+        body: eventMessage,
+      },
+      'eventMessage.:',
+    );
+    this.logger.info({ body: eventMessage['topic_name'] }, 'topic_name.:');
 
     switch (eventMessage['topic_name']) {
       case 'email_password_reset':
-        this.handleEmailPasswordReset(eventMessage);
+        await this.handleEmailPasswordReset(eventMessage);
       case 'email_order_created':
-        this.handleEmailOrderConfirmed(eventMessage);
+        await this.handleEmailOrderConfirmed(eventMessage);
     }
 
     this.logger.info(

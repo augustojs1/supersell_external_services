@@ -1,22 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import * as ejs from 'ejs';
+import { ITemplateEngineService } from '../itemplate-engine-service.interface';
 
 @Injectable()
-export class EjsTemplateEngineService {
-  public async getTemplate(data: any): Promise<string> {
-    return new Promise((resolve, reject) => {
-      ejs.renderFile(
-        'src/templates/ejs/password_recovery.ejs',
-        data,
-        async function (error, template) {
-          if (!error) {
-            resolve(template as string);
-          }
+export class EjsTemplateEngineService implements ITemplateEngineService {
+  public async getTemplate(templateString: string, data: any): Promise<string> {
+    try {
+      const html = ejs.render(templateString, data, {
+        async: true,
+      });
 
-          reject(error);
-        },
-      );
-    });
+      return html;
+    } catch (error) {
+      throw new Error(`Error generating HTML from string:: ${error}`);
+    }
+
+    // return new Promise((resolve, reject) => {
+    //   ejs.renderFile(
+    //     '../../../../src/templates/ejs/password_recovery.ejs',
+    //     data,
+    //     async function (error, template) {
+    //       if (!error) {
+    //         resolve(template as string);
+    //       }
+
+    //       reject(error);
+    //     },
+    //   );
+    // });
   }
 
   public async getOrderStausChangeTemplate(data: {

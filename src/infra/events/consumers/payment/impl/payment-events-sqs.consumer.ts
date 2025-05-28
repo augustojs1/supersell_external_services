@@ -28,7 +28,6 @@ export class PaymentEventsSqsConsumer implements IPaymentEventsConsumer {
       },
       'Starting AWS SQS PaymentEventsSqsConsumer consumer class',
     );
-
     this.consumer.start();
   }
 

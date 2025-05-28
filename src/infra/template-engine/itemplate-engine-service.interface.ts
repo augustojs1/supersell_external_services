@@ -1,5 +1,5 @@
 export abstract class ITemplateEngineService {
-  abstract getTemplate(data: any): Promise<string>;
+  abstract getTemplate(html: string, data: any): Promise<string>;
   abstract getOrderStausChangeTemplate(data: {
     templatePath: string;
     payload: any;
