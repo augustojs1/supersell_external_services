@@ -12,14 +12,13 @@ import { ITemplateEngineService } from '@/infra/template-engine/itemplate-engine
 import { IMailingClientService } from '@/infra/mailing-client/imailing-client-service.interface';
 import { EmailTemplatesRepository } from './email-templates.repository';
 import { EmailTemplateEntity } from './models';
-import { EmailTemplateTypes } from './enums';
+import { EmailTemplateTypes, OrderStatusToEmailType } from './enums';
 
 @Injectable()
 export class EmailsService {
   private readonly logger: JsonLogger = LoggerFactory.createLogger(
     EmailsService.name,
   );
-  private readonly orderStatusEmailTemplate = EmailStatusTemplateConstant;
 
   constructor(
     private readonly configService: ConfigService,
@@ -89,26 +88,41 @@ export class EmailsService {
     }
   }
 
-  public async sendOrderStatusChangeEmail(data: OrderStatusChangeDto) {
+  public async sendOrderStatusChangeEmail(
+    data: OrderStatusChangeDto,
+  ): Promise<void> {
+    const emailTemplateType = OrderStatusToEmailType[data.status];
+
+    console.log('emailTemplateType.:', emailTemplateType);
+
     try {
-      const statusData = this.orderStatusEmailTemplate[data.status];
+      const emailTemplate =
+        await this.findEmailTemplateByType(emailTemplateType);
 
-      if (!statusData) {
-        throw new Error(
-          `Order status email template does not exists for status ${data.status}`,
-        );
-      }
+      this.logger.info(
+        {
+          html: emailTemplate,
+        },
+        `Email template found for type ${emailTemplateType}`,
+      );
 
-      const template =
-        await this.templateEngineService.getOrderStausChangeTemplate({
-          payload: data,
-          templatePath: statusData.templatePath,
-        });
+      const template = await this.templateEngineService.getTemplate(
+        emailTemplate.html,
+        data,
+      );
+
+      console.log('generated template.:', template);
+
+      const subject = EmailStatusTemplateConstant[data.status].getSubject(
+        data.order_id,
+      );
+
+      console.log('subject.:', subject);
 
       await this.mailingClientService.send({
         from: this.configService.get<string>('email.admin'),
         to: data.customer_email,
-        subject: statusData.getSubject(data.order_id),
+        subject: subject,
         html: template,
       });
 

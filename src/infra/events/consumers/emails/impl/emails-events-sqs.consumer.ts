@@ -47,6 +47,7 @@ export class EmailsEventsSqsConsumer implements IEmailsEventsConsumer {
       },
       'eventMessage.:',
     );
+
     this.logger.info({ body: eventMessage['topic_name'] }, 'topic_name.:');
 
     switch (eventMessage['topic_name']) {
@@ -55,6 +56,9 @@ export class EmailsEventsSqsConsumer implements IEmailsEventsConsumer {
         break;
       case 'email_order_created':
         await this.handleEmailOrderConfirmed(eventMessage);
+        break;
+      case 'email_order_status_change':
+        await this.handleEmailOrderStatusChange(eventMessage);
         break;
     }
 
@@ -95,7 +99,9 @@ export class EmailsEventsSqsConsumer implements IEmailsEventsConsumer {
     await this.emailsService.sendOrderReceiptEmail(dto);
   }
 
-  handleEmailOrderStatusChange(dto: OrderStatusChangeDto): Promise<void> {
+  public async handleEmailOrderStatusChange(
+    dto: OrderStatusChangeDto,
+  ): Promise<void> {
     this.logger.info(
       {
         body: dto,
@@ -103,6 +109,6 @@ export class EmailsEventsSqsConsumer implements IEmailsEventsConsumer {
       `Subscribe to message on topic ${MessagingTopics.EMAIL_ORDER_STATUS_CHANGE}`,
     );
 
-    return;
+    await this.emailsService.sendOrderStatusChangeEmail(dto);
   }
 }
