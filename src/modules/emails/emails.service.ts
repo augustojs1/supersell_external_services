@@ -131,14 +131,34 @@ export class EmailsService {
 
   public async sendOrderReceiptEmail(dto: EmailOrderConfirmedDto) {
     try {
-      const template =
-        await this.templateEngineService.getOrderReceiptTemplate(dto);
+      const emailTemplate = await this.findEmailTemplateByType(
+        EmailTemplateTypes.ORDER_RECEIPT,
+      );
+
+      this.logger.info(
+        {
+          html: emailTemplate,
+        },
+        `Email template found for type ${EmailTemplateTypes.ORDER_RECEIPT}`,
+      );
+
+      const htmlString = await this.templateEngineService.getTemplate(
+        emailTemplate.html,
+        dto,
+      );
+
+      this.logger.info(
+        {
+          html: htmlString,
+        },
+        `Email template generated for type ${EmailTemplateTypes.ORDER_RECEIPT}`,
+      );
 
       await this.mailingClientService.send({
         from: this.configService.get<string>('email.admin'),
         to: dto.user.email,
         subject: `Your Order #${dto.order_id} – Receipt & Details`,
-        html: template,
+        html: htmlString,
       });
 
       this.logger.info(

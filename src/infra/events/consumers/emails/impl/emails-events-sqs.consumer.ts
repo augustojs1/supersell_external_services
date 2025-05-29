@@ -21,14 +21,6 @@ export class EmailsEventsSqsConsumer implements IEmailsEventsConsumer {
   private readonly consumer: Consumer;
 
   constructor(private readonly emailsService: EmailsService) {
-    this.logger.info({ info: this.emailsService }, 'EmailsService is:');
-    this.logger.info(
-      {
-        info: this.emailsService.sendPasswordResetLink,
-      },
-      'EmailsService.sendPasswordResetLink is:',
-    );
-
     this.consumer = Consumer.create({
       queueUrl: process.env.AWS_SQS_QUEUE_EMAIL_EVENTS_URL,
       waitTimeSeconds: 5,
@@ -60,8 +52,10 @@ export class EmailsEventsSqsConsumer implements IEmailsEventsConsumer {
     switch (eventMessage['topic_name']) {
       case 'email_password_reset':
         await this.handleEmailPasswordReset(eventMessage);
+        break;
       case 'email_order_created':
         await this.handleEmailOrderConfirmed(eventMessage);
+        break;
     }
 
     this.logger.info(
@@ -88,7 +82,9 @@ export class EmailsEventsSqsConsumer implements IEmailsEventsConsumer {
     await this.emailsService.sendPasswordResetLink(dto);
   }
 
-  handleEmailOrderConfirmed(dto: EmailOrderConfirmedDto): Promise<void> {
+  public async handleEmailOrderConfirmed(
+    dto: EmailOrderConfirmedDto,
+  ): Promise<void> {
     this.logger.info(
       {
         body: dto,
@@ -96,7 +92,7 @@ export class EmailsEventsSqsConsumer implements IEmailsEventsConsumer {
       `Subscribe to message on topic ${MessagingTopics.EMAIL_ORDER_CREATED}`,
     );
 
-    return;
+    await this.emailsService.sendOrderReceiptEmail(dto);
   }
 
   handleEmailOrderStatusChange(dto: OrderStatusChangeDto): Promise<void> {
