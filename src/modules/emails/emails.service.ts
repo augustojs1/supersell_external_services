@@ -93,8 +93,6 @@ export class EmailsService {
   ): Promise<void> {
     const emailTemplateType = OrderStatusToEmailType[data.status];
 
-    console.log('emailTemplateType.:', emailTemplateType);
-
     try {
       const emailTemplate =
         await this.findEmailTemplateByType(emailTemplateType);
@@ -111,13 +109,9 @@ export class EmailsService {
         data,
       );
 
-      console.log('generated template.:', template);
-
       const subject = EmailStatusTemplateConstant[data.status].getSubject(
         data.order_id,
       );
-
-      console.log('subject.:', subject);
 
       await this.mailingClientService.send({
         from: this.configService.get<string>('email.admin'),

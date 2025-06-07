@@ -5,8 +5,8 @@ import { Consumer } from 'sqs-consumer';
 import { JsonLogger, LoggerFactory } from 'json-logger-service';
 
 import { OrderPaymentsService } from '@/modules/order-payments/order-payments.service';
-import { MessagingTopics } from '@/infra/events/enum';
 import { IPaymentEventsConsumer } from '@/infra/events/consumers/payment/ipayment-events-consumer.interface';
+import { PaymentMessageDto } from '../dto';
 
 @Injectable()
 export class PaymentEventsSqsConsumer implements IPaymentEventsConsumer {
@@ -20,35 +20,33 @@ export class PaymentEventsSqsConsumer implements IPaymentEventsConsumer {
       queueUrl: process.env.AWS_SQS_QUEUE_PAYMENT_EVENTS_URL,
       waitTimeSeconds: 5,
       pollingWaitTimeMs: 0,
-      handleMessage: async (message) => this.handleMessage(message),
+      handleMessage: async (message) => this.handleOrdersPayment(message),
     });
+
     this.logger.info(
       {
         success: true,
       },
       'Starting AWS SQS PaymentEventsSqsConsumer consumer class',
     );
+
     this.consumer.start();
   }
 
-  async handleMessage(message: Message): Promise<void> {
+  public async handleOrdersPayment(message: Message): Promise<void> {
     const body = JSON.parse(message.Body) as SNSMessage;
+
+    const eventMessage = JSON.parse(body.Message) as PaymentMessageDto;
 
     this.logger.info(
       {
         body: body,
         MessageAttributes: body.MessageAttributes,
+        eventMessage,
       },
-      `Received message from SQS queue in class EmailsEventsSqsConsumer`,
+      `Received message from SQS queue in class PaymentEventsSqsConsumer`,
     );
-  }
 
-  handleOrdersPayment(data: any): Promise<void> {
-    this.logger.info({
-      message: `Subscribe to message on topic ${MessagingTopics.ORDER_PAYMENT}`,
-      body: data,
-    });
-
-    return;
+    await this.orderPaymentsService.create(eventMessage);
   }
 }

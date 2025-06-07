@@ -1,11 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { MySql2Database } from 'drizzle-orm/mysql2';
 import { eq } from 'drizzle-orm';
-import { ulid } from 'ulid';
 
 import * as schemas from '@/infra/database/orm/drizzle/schema';
-import { OrderStatus } from './enums';
-import { OrderPaymentEntity, PaymentData, ProductOrdersResult } from './types';
+import { OrderEntity } from './types';
+import { OrderCustomer } from './types/order-customer.type';
 
 @Injectable()
 export class OrdersRepository {
@@ -14,60 +13,56 @@ export class OrdersRepository {
     private readonly drizzle: MySql2Database,
   ) {}
 
-  public async createOrderPaymentAndSetOrderStatusTrx(
-    orderStatus: OrderStatus,
-    paymentData: PaymentData,
-  ): Promise<void> {
-    await this.drizzle.transaction(async (tx) => {
-      try {
-        const id = ulid();
+  public async findById(id: string): Promise<OrderEntity | null> {
+    const result = await this.drizzle
+      .select()
+      .from(schemas.orders)
+      .where(eq(schemas.orders.id, id));
 
-        // Create new order payment record
-        await tx.insert(schemas.order_payments).values({
-          id,
-          order_id: paymentData.order_id,
-          status: paymentData.status,
-          amount: paymentData.amount,
-          code: paymentData.code,
-          method: paymentData.method,
-        } as OrderPaymentEntity);
+    return result[0] ?? null;
+  }
 
-        // Set new products sales amount
-        const orderProducts: ProductOrdersResult[] = await tx
-          .select({
-            id: schemas.products.id,
-            sales: schemas.products.sales,
-          })
-          .from(schemas.orders)
-          .innerJoin(
-            schemas.order_items,
-            eq(schemas.orders.id, schemas.order_items.order_id),
-          )
-          .innerJoin(
-            schemas.products,
-            eq(schemas.products.id, schemas.order_items.product_id),
-          )
-          .where(eq(schemas.orders.id, paymentData.order_id));
+  public async findOrderAndCustomerById(
+    order_id: string,
+  ): Promise<OrderCustomer> {
+    // SELECT
+    // 	o.id as order_id,
+    // 	o.status as status,
+    // 	o.customer_id as customer_id,
+    // 	u.username as customer_name,
+    // 	o.seller_id as seller_id
+    // FROM
+    // 	orders o
+    // INNER JOIN
+    // 	users u
+    // ON
+    // 	o.customer_id = u.id
+    // WHERE
+    // 	o.id = '';
+    const queryResult = await this.drizzle
+      .select({
+        customer: {
+          first_name: schemas.users.first_name,
+          email: schemas.users.email,
+        },
+        order: {
+          id: schemas.orders.id,
+          customer_id: schemas.orders.customer_id,
+          seller_id: schemas.orders.seller_id,
+          delivery_address_id: schemas.orders.delivery_address_id,
+          status: schemas.orders.status,
+          total_price: schemas.orders.total_price,
+          updated_at: schemas.orders.updated_at,
+          created_at: schemas.orders.created_at,
+        },
+      })
+      .from(schemas.orders)
+      .innerJoin(
+        schemas.users,
+        eq(schemas.orders.customer_id, schemas.users.id),
+      )
+      .where(eq(schemas.orders.id, order_id));
 
-        orderProducts.forEach(async (product) => {
-          await this.drizzle
-            .update(schemas.products)
-            .set({
-              sales: product.sales + 1,
-            } as any)
-            .where(eq(schemas.products.id, product.id));
-        });
-
-        // Set new order status
-        await tx
-          .update(schemas.orders)
-          .set({
-            status: orderStatus,
-          })
-          .where(eq(schemas.orders.id, paymentData.order_id));
-      } catch (error) {
-        throw error;
-      }
-    });
+    return queryResult[0] ?? null;
   }
 }
