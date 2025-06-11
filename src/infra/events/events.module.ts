@@ -16,6 +16,7 @@ import { PaymentEventsSqsConsumer } from '@/infra/events/consumers/payment/impl/
   controllers: [PaymentEventsRabbitMqConsumer, EmailsEventsRabbitMqConsumer],
   imports: [OrderPaymentsModule, EmailsModule],
   providers: [
+    EmailsEventsSqsConsumer,
     {
       provide: IEmailsEventsConsumer,
       useClass:
